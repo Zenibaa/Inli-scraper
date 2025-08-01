@@ -3,15 +3,10 @@
   "build": {
     "builder": "NIXPACKS",
     "buildCommand": "mvn clean package",
-    "runCommand": "java -jar target/inli-scraper-*.jar"
+    "runCommand": "java -cp target/classes com.inliscraper.App"
   },
   "deploy": {
-    "runtime": "V2",
-    "numReplicas": 1,
-    "startCommand": "java -jar target/inli-scraper-*.jar",
-    "healthcheckPath": "/",
-    "sleepApplication": false,
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "startCommand": "java -cp target/classes com.inliscraper.App",
+    "restartPolicyType": "ON_FAILURE"
   }
 }
