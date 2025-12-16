@@ -1,12 +1,16 @@
 {
-  "$schema": "https://railway.app/railway.schema.json",
+  "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "mvn clean package",
-    "runCommand": "java -cp target/classes com.inliscraper.App"
+    "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "java -cp target/classes com.inliscraper.App",
-    "restartPolicyType": "ON_FAILURE"
+    "runtime": "V2",
+    "numReplicas": 1,
+    "sleepApplication": false,
+    "startCommand": "java -Xmx450m -jar target/inli-scraper-1.0.0.jar",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 100
   }
 }
