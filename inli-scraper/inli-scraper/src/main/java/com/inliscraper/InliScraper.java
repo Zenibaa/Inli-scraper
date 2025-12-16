@@ -447,7 +447,7 @@ private void checkForUpdates() {
         int count = 0;
 
         for (PropertyOffer offer : offers) {
-            if (count >= 10) { // Limiter à 10 annonces par notification Discord
+            if (count >= 20) { // Limiter à 10 annonces par notification Discord
                 sb.append("... et ").append(offers.size() - count).append(" autres logements");
                 break;
             }
@@ -458,21 +458,21 @@ private void checkForUpdates() {
             }
             sb.append("🏠 **").append(title).append("**\n");
 
-            if (offer.getPrice() != null && !offer.getPrice().isEmpty()) {
-                sb.append("💰 ").append(offer.getPrice()).append("\n");
-            }
-            if (offer.getArea() != null && !offer.getArea().isEmpty()) {
-                sb.append("📏 ").append(offer.getArea()).append("\n");
-            }
-            if (offer.getRooms() != null && !offer.getRooms().isEmpty()) {
-                sb.append("🚪 ").append(offer.getRooms()).append("\n");
-            }
-            if (offer.getLocation() != null && !offer.getLocation().isEmpty()) {
-                sb.append("📍 ").append(offer.getLocation()).append("\n");
-            }
-            if (offer.getDescription() != null && !offer.getDescription().isEmpty()) {
-                sb.append("📄 ").append(offer.getDescription()).append("\n");
-            }
+            // if (offer.getPrice() != null && !offer.getPrice().isEmpty()) {
+            //     sb.append("💰 ").append(offer.getPrice()).append("\n");
+            // }
+            // if (offer.getArea() != null && !offer.getArea().isEmpty()) {
+            //     sb.append("📏 ").append(offer.getArea()).append("\n");
+            // }
+            // if (offer.getRooms() != null && !offer.getRooms().isEmpty()) {
+            //     sb.append("🚪 ").append(offer.getRooms()).append("\n");
+            // }
+            // if (offer.getLocation() != null && !offer.getLocation().isEmpty()) {
+            //     sb.append("📍 ").append(offer.getLocation()).append("\n");
+            // }
+            // if (offer.getDescription() != null && !offer.getDescription().isEmpty()) {
+            //     sb.append("📄 ").append(offer.getDescription()).append("\n");
+            // }
             if (offer.getUrl() != null && !offer.getUrl().isEmpty()) {
                 sb.append("🔗 [Voir l'annonce](").append(offer.getUrl()).append(")\n");
             }
@@ -492,4 +492,5 @@ private void checkForUpdates() {
             default: return 0x0099ff;
         }
     }
+
 }
