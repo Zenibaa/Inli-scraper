@@ -1,10 +1,15 @@
 package com.inliscraper;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
-// Classe pour les offres immobilières
+/**
+ * Représente une offre immobilière
+ */
 public class PropertyOffer {
+    private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
+
     private String id;
     private String title;
     private String price;
@@ -13,34 +18,89 @@ public class PropertyOffer {
     private String location;
     private String description;
     private String url;
-    private LocalDateTime lastUpdated;
+    private ZonedDateTime lastUpdated;
 
-    public PropertyOffer() {}
+    public PropertyOffer() {
+        this.lastUpdated = ZonedDateTime.now(PARIS_ZONE);
+    }
 
-    // Getters et Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // Getters
+    public String getId() {
+        return id;
+    }
 
-    public String getTitle() { return title != null ? title : ""; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title != null ? title : "";
+    }
 
-    public String getPrice() { return price != null ? price : ""; }
-    public void setPrice(String price) { this.price = price; }
+    public String getPrice() {
+        return price != null ? price : "";
+    }
 
-    public String getArea() { return area != null ? area : ""; }
-    public void setArea(String area) { this.area = area; }
+    public String getArea() {
+        return area != null ? area : "";
+    }
 
-    public String getRooms() { return rooms != null ? rooms : ""; }
-    public void setRooms(String rooms) { this.rooms = rooms; }
+    public String getRooms() {
+        return rooms != null ? rooms : "";
+    }
 
-    public String getLocation() { return location != null ? location : ""; }
-    public void setLocation(String location) { this.location = location; }
+    public String getLocation() {
+        return location != null ? location : "";
+    }
 
-    public String getUrl() { return url != null ? url : ""; }
-    public void setUrl(String url) { this.url = url; }
+    public String getDescription() {
+        return description != null ? description : "";
+    }
 
-    public LocalDateTime getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
+    public String getUrl() {
+        return url != null ? url : "";
+    }
+
+    public ZonedDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    // Setters
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public void setRooms(String rooms) {
+        this.rooms = rooms;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setLastUpdated(ZonedDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public void updateTimestamp() {
+        this.lastUpdated = ZonedDateTime.now(PARIS_ZONE);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -58,26 +118,9 @@ public class PropertyOffer {
         return Objects.hash(id, price, area, rooms);
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @Override
     public String toString() {
-        return "PropertyOffer{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", price='" + price + '\'' +
-                ", area='" + area + '\'' +
-                ", rooms='" + rooms + '\'' +
-                ", location='" + location + '\'' +
-                ", description='" + description + '\'' +
-                ", url='" + url + '\'' +
-                ", lastUpdated=" + lastUpdated +
-                '}';
+        return String.format("PropertyOffer{id='%s', title='%s', price='%s', area='%s', rooms='%s', location='%s'}",
+                id, title, price, area, rooms, location);
     }
 }
