@@ -48,6 +48,12 @@ public class InliScraper {
     private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    // Horaires de surveillance
+    private static final int START_HOUR = 6;
+    private static final int START_MINUTE = 30;
+    private static final int END_HOUR = 20;
+    private static final int END_MINUTE = 30;
+
     // Headers pour simuler un navigateur
     private static final Map<String, String> HEADERS = createHeaders();
 
