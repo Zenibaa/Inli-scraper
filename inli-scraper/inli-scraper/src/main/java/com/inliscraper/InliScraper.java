@@ -134,9 +134,12 @@ public class InliScraper {
     private void checkForUpdates() {
         // Vérifier si on est dans les horaires de surveillance
         if (!isWithinOperatingHours()) {
-            // Afficher un log toutes les minutes pour garder le conteneur actif
+            // Afficher un log seulement une fois par heure pour éviter le spam
+            ZonedDateTime now = ZonedDateTime.now(PARIS_ZONE);
+            if (now.getMinute() == 0 && now.getSecond() < CHECK_INTERVAL_SECONDS) {
                 System.out.println("⏸️ Hors horaires de surveillance (" + getCurrentTime() +
-                        ") - Reprise à " + START_HOUR + "h" + String.format("%02d", START_MINUTE));
+                        ") - Reprise à " + String.format("%02d:%02d", START_HOUR, START_MINUTE));
+            }
             return;
         }
 
@@ -531,3 +534,4 @@ public class InliScraper {
         return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes;
     }
 }
+
