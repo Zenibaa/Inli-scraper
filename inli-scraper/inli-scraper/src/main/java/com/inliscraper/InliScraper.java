@@ -42,17 +42,17 @@ public class InliScraper {
     private static final String DISCORD_WEBHOOK_URL_VAL_D_OISE = "https://discord.com/api/webhooks/1451558218877763687/mn6C0DH_DIFfmdP2QHgRmr8bWdEKcqYDpxylC5kS_335S6utRMvlk52kTYMex_qIxfuv";
 
     // URLs de recherche Inli
-    private static final String INLI_URL_VAL_DE_MARNE = "https://www.inli.fr/locations/offres/Val-de-Marne%20(D%C3%A9partement)*_Val-de-Marne%20(D%C3%A9partement)*?price_min=&price_max=1000&area_min=35&area_max=";
-    private static final String INLI_URL_PARIS = "https://www.inli.fr/locations/offres/paris-departement_d:75?price_min=0&price_max=1500&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
-    private static final String INLI_URL_HAUTS_DE_SEINE = "https://www.inli.fr/locations/offres/hauts-de-seine-departement_d:92?price_min=&price_max=1100&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
-    private static final String INLI_URL_SEINE_SAINT_DENIS = "https://www.inli.fr/locations/offres/seine-saint-denis-departement_d:93?price_min=&price_max=1100&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
-    private static final String INLI_URL_SEINE_ET_MARNE = "https://www.inli.fr/locations/offres/seine-et-marne-departement_d:77?price_min=&price_max=1100&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
-    private static final String INLI_URL_YVELINES = "https://www.inli.fr/locations/offres/yvelines-departement_d:78?price_min=&price_max=1100&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
-    private static final String INLI_URL_ESSONNE = "https://www.inli.fr/locations/offres/essonne-departement_d:91?price_min=0&price_max=1106&area_min=0&area_max=250&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
-    private static final String INLI_URL_VAL_D_OISE = "https://www.inli.fr/locations/offres/val-doise-departement_d:95?price_min=&price_max=1100&area_min=&area_max=&room_min=1&room_max=5&bedroom_min=1&bedroom_max=5";
+    private static final String INLI_URL_VAL_DE_MARNE = "https://www.inli.fr/locations/offres/val-de-marne-departement_d:94?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_PARIS = "https://www.inli.fr/locations/offres/paris-departement_d:75?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_HAUTS_DE_SEINE = "https://www.inli.fr/locations/offres/hauts-de-seine-departement_d:92?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_SEINE_SAINT_DENIS = "https://www.inli.fr/locations/offres/seine-saint-denis-departement_d:93?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_SEINE_ET_MARNE = "https://www.inli.fr/locations/offres/seine-et-marne-departement_d:77?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_YVELINES = "https://www.inli.fr/locations/offres/yvelines-departement_d:78?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_ESSONNE = "https://www.inli.fr/locations/offres/essonne-departement_d:91?price_min=0&price_max=1100&area_min=0&area_max=250&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
+    private static final String INLI_URL_VAL_D_OISE = "https://www.inli.fr/locations/offres/val-doise-departement_d:95?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
 
     private static final int CHECK_INTERVAL_SECONDS = 10;
-    private static final int THREAD_POOL_SIZE = 4;
+    private static final int THREAD_POOL_SIZE = Math.min(Runtime.getRuntime().availableProcessors() * 2, 8);
     private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -135,11 +135,8 @@ public class InliScraper {
         // Vérifier si on est dans les horaires de surveillance
         if (!isWithinOperatingHours()) {
             // Afficher un log toutes les minutes pour garder le conteneur actif
-            ZonedDateTime now = ZonedDateTime.now(PARIS_ZONE);
-            if (now.getSecond() < CHECK_INTERVAL_SECONDS) {
                 System.out.println("⏸️ Hors horaires de surveillance (" + getCurrentTime() +
                         ") - Reprise à " + START_HOUR + "h" + String.format("%02d", START_MINUTE));
-            }
             return;
         }
 
@@ -251,7 +248,7 @@ public class InliScraper {
 
             // Le titre avec lien cliquable
             String offerTitle = offer.getTitle().isEmpty() ? "Logement " + offer.getId() :
-                    "Appartement•" + offer.getRooms() + "•" + offer.getArea() + "•" + offer.getLocation()+ "•" + offer.getPrice();
+                    "Appartement •" + offer.getRooms() + " •" + offer.getArea() + " •" + offer.getLocation()+ " •" + offer.getPrice();
 
             String prefix ="🏠 ";
             if(status.equals("NOUVEAU")){
