@@ -48,18 +48,16 @@ public class App {
     
     private static void startKeepAlive(int port) {
         Thread keepAliveThread = new Thread(() -> {
-            System.out.println("💓 Thread Keep-Alive démarré");
+            System.out.println("💓 Thread Keep-Alive démarré (ping toutes les 2 minutes)");
             
             while (keepAliveRunning) {
                 try {
-                    // Afficher un log toutes les minutes
                     System.out.println("💓 KeepAlive - " + getCurrentDateTime());
                     
-                    // Faire un auto-ping toutes les 5 minutes pour garder Railway actif
-                    // Railway détecte l'activité HTTP et ne met pas en sleeping
-                    Thread.sleep(5 * 60 * 1000); // 5 minutes
+                    // Attendre 2 minutes
+                    Thread.sleep(2 * 60 * 1000); // 2 minutes
                     
-                    // Auto-ping sur l'endpoint /health
+                    // Auto-ping pour garder Railway actif
                     pingHealthEndpoint(port);
                     
                 } catch (InterruptedException e) {
@@ -67,13 +65,18 @@ public class App {
                     break;
                 } catch (Exception e) {
                     System.err.println("⚠️ Erreur Keep-Alive: " + e.getMessage());
+                    try {
+                        Thread.sleep(2 * 60 * 1000); // Retry après 2 minutes en cas d'erreur
+                    } catch (InterruptedException ie) {
+                        break;
+                    }
                 }
             }
             
             System.out.println("💤 Thread Keep-Alive arrêté");
         });
         
-        keepAliveThread.setDaemon(false); // Thread non-daemon pour garder l'app vivante
+        keepAliveThread.setDaemon(false);
         keepAliveThread.start();
     }
     
@@ -152,7 +155,7 @@ public class App {
                 "notifications", "Une par offre",
                 "timezone", "Europe/Paris",
                 "currentTime", getCurrentDateTime(),
-                "keepAlive", "active - ping toutes les 5 minutes"
+                "keepAlive", "actif - ping toutes les 2 minutes"
             ));
         });
         
