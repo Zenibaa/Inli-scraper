@@ -79,7 +79,10 @@ public class App {
     
     private static void pingHealthEndpoint(int port) {
         try {
-            String urlString = "http://localhost:" + port + "/health";
+            // Utiliser localhost car on est dans le même conteneur
+            // Ça fonctionne aussi bien sur Railway qu'en local
+            String urlString = "http://127.0.0.1:" + port + "/health";
+            
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
