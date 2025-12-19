@@ -1,8 +1,6 @@
 package com.inliscraper;
 
 import io.javalin.Javalin;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +13,6 @@ import java.util.Map;
 public class App {
     private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    private static volatile boolean keepAliveRunning = true;
     
     public static void main(String[] args) {
         try {
@@ -27,13 +24,11 @@ public class App {
             int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
             Javalin app = createServer(port);
             
-            // Keep-alive avec auto-ping pour éviter le sleeping
-            startKeepAlive(port);
+            System.out.println("✅ Système démarré - En attente de pings externes pour rester actif");
             
             // Gestion de l'arrêt propre
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 System.out.println("🛑 Arrêt du système...");
-                keepAliveRunning = false;
                 scraper.stop();
                 app.stop();
                 System.out.println("✅ Système arrêté proprement");
@@ -43,67 +38,6 @@ public class App {
             System.err.println("💡 Si le port est déjà utilisé, essayez : PORT=8081 java -jar votre-app.jar");
             e.printStackTrace();
             System.exit(1);
-        }
-    }
-    
-    private static void startKeepAlive(int port) {
-        Thread keepAliveThread = new Thread(() -> {
-            System.out.println("💓 Thread Keep-Alive démarré (ping toutes les 2 minutes)");
-            
-            while (keepAliveRunning) {
-                try {
-                    System.out.println("💓 KeepAlive - " + getCurrentDateTime());
-                    
-                    // Attendre 2 minutes
-                    Thread.sleep(2 * 60 * 1000); // 2 minutes
-                    
-                    // Auto-ping pour garder Railway actif
-                    pingHealthEndpoint(port);
-                    
-                } catch (InterruptedException e) {
-                    System.out.println("⚠️ Thread Keep-Alive interrompu");
-                    break;
-                } catch (Exception e) {
-                    System.err.println("⚠️ Erreur Keep-Alive: " + e.getMessage());
-                    try {
-                        Thread.sleep(2 * 60 * 1000); // Retry après 2 minutes en cas d'erreur
-                    } catch (InterruptedException ie) {
-                        break;
-                    }
-                }
-            }
-            
-            System.out.println("💤 Thread Keep-Alive arrêté");
-        });
-        
-        keepAliveThread.setDaemon(false);
-        keepAliveThread.start();
-    }
-    
-    private static void pingHealthEndpoint(int port) {
-        try {
-            // Utiliser localhost car on est dans le même conteneur
-            // Ça fonctionne aussi bien sur Railway qu'en local
-            String urlString = "http://127.0.0.1:" + port + "/health";
-            
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-            
-            int responseCode = connection.getResponseCode();
-            
-            if (responseCode == 200) {
-                System.out.println("🏓 Auto-ping réussi (HTTP " + responseCode + ")");
-            } else {
-                System.out.println("⚠️ Auto-ping réponse inhabituelle (HTTP " + responseCode + ")");
-            }
-            
-            connection.disconnect();
-            
-        } catch (Exception e) {
-            System.err.println("⚠️ Erreur auto-ping: " + e.getMessage());
         }
     }
 
@@ -121,11 +55,11 @@ public class App {
                 "service", "Inli Scraper",
                 "timestamp", getCurrentDateTime(),
                 "timezone", "Europe/Paris",
-                "keepAlive", "active"
+                "keepAlive", "external ping"
             ));
         });
         
-        // Endpoint de santé avec compteur de requêtes
+        // Endpoint de santé
         app.get("/health", ctx -> {
             ctx.json(Map.of(
                 "status", "healthy",
@@ -141,7 +75,7 @@ public class App {
                     "VAL_D_OISE", "monitoring",
                     "YVELINES", "monitoring"
                 ),
-                "keepAlive", "active"
+                "keepAlive", "external ping"
             ));
         });
         
@@ -155,16 +89,17 @@ public class App {
                 "notifications", "Une par offre",
                 "timezone", "Europe/Paris",
                 "currentTime", getCurrentDateTime(),
-                "keepAlive", "actif - ping toutes les 2 minutes"
+                "keepAlive", "external ping (UptimeRobot ou similaire)"
             ));
         });
         
-        // Endpoint pour forcer le keep-alive manuel
+        // Endpoint pour ping externe - UTILISEZ CELUI-CI avec UptimeRobot
         app.get("/ping", ctx -> {
+            System.out.println("🏓 Ping externe reçu à " + getCurrentDateTime());
             ctx.json(Map.of(
                 "status", "pong",
                 "timestamp", getCurrentDateTime(),
-                "message", "Keep-Alive actif"
+                "message", "Serveur actif et fonctionnel"
             ));
         });
         
