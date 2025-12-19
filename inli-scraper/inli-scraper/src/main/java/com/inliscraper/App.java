@@ -95,11 +95,18 @@ public class App {
         
         // Endpoint pour ping externe - UTILISEZ CELUI-CI avec UptimeRobot
         app.get("/ping", ctx -> {
-            System.out.println("🏓 Ping externe reçu à " + getCurrentDateTime());
+            String timestamp = getCurrentDateTime();
+            System.out.println("════════════════════════════════════════");
+            System.out.println("🏓 PING EXTERNE REÇU");
+            System.out.println("📅 " + timestamp);
+            System.out.println("🌍 IP: " + ctx.ip());
+            System.out.println("════════════════════════════════════════");
+            
             ctx.json(Map.of(
                 "status", "pong",
-                "timestamp", getCurrentDateTime(),
-                "message", "Serveur actif et fonctionnel"
+                "timestamp", timestamp,
+                "message", "Serveur actif et fonctionnel",
+                "ip", ctx.ip()
             ));
         });
         
