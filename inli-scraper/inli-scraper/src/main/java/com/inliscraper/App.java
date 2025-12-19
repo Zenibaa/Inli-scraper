@@ -23,6 +23,18 @@ public class App {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         Javalin app = createServer(port);
 
+        // Keep-alive interne pour Railway
+        new Thread(() -> {
+            while (true) {
+                try {
+                    System.out.println("💓 KeepAlive " + getCurrentDateTime());
+                    Thread.sleep(60_000); // 1 minute
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
+
         // Gestion de l'arrêt propre
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("🛑 Arrêt du système...");
@@ -56,10 +68,8 @@ public class App {
                     "scraper", "active",
                     "timestamp", getCurrentDateTime(),
                     "regions", Map.of(
-                            "IDF", "monitoring",
                             "PARIS", "monitoring",
-                            "VAL_MARNE", "monitoring",
-                            "HAY_LES_ROSES", "monitoring"
+                            "VAL_MARNE", "monitoring"
                     )
             ));
         });
