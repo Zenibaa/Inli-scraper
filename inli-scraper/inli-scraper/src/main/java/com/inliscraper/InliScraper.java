@@ -52,7 +52,7 @@ public class InliScraper {
     private static final String INLI_URL_VAL_D_OISE = "https://www.inli.fr/locations/offres/val-doise-departement_d:95?price_min=&price_max=1100&area_min=&area_max=&room_min=0&room_max=5&bedroom_min=0&bedroom_max=5";
 
     private static final int CHECK_INTERVAL_SECONDS = 10;
-    private static final int THREAD_POOL_SIZE = Math.min(Runtime.getRuntime().availableProcessors() * 2, 8);
+    private static final int THREAD_POOL_SIZE = 2;
     private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -534,4 +534,5 @@ public class InliScraper {
         return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes;
     }
 }
+
 
